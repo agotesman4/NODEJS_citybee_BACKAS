@@ -18,6 +18,7 @@ app.use(cors());
 app.get("/", (req, res) => {
   res.send({ message: "SERVER RUNS OK" });
 });
+// OK WORKS
 
 app.get("/models", async (req, res) => {
   try {

@@ -65,7 +65,7 @@ app.get("/modelscount", async (req, res) => {
   try {
     const con = await mysql.createConnection(mysqlConfig);
     const [data] = await con.execute(
-      `SELECT COUNT(name) AS TotalOfCars FROM models`
+      `SELECT name, COUNT(vehicles.model_id) AS COUNT, hour_price FROM models INNER JOIN vehicles ON vehicles.model_id = models.id GROUP by models.id`
     );
 
     return res.send(data);
@@ -74,21 +74,36 @@ app.get("/modelscount", async (req, res) => {
     return res.status(500).end({ error: "ERROR, PLEASE TRY AGAIN" });
   }
 });
-// NEED SOME FIXING
+// OK WORKS
 
-app.get("/vehicles", async (req, res) => {});
-// GET NOT DONE
+app.get("/vehicles", async (req, res) => {
+  try {
+    const con = await mysql.createConnection(mysqlConfig);
+    const [data] = await con.execute(
+      `SELECT vehicles.id, models.name, vehicles.number_plate, models.hour_price+models.hour_price*0.21 AS price_withVAT FROM vehicles INNER JOIN models ON vehicles.model_id = models.id`
+    );
+
+    return res.send(data);
+  } catch (err) {
+    console.log(err);
+    return res.status(500).end({ error: "ERROR, PLEASE TRY AGAIN" });
+  }
+});
+// OK WORKS
+
 app.post("/vehicles", async (req, res) => {
   if (
     !req.body.model_id ||
     !req.body.number_plate ||
-    !req.body.country_location
+    !req.body.country_location ||
+    req.body.country_location < 2 ||
+    req.body.country_location > 2
   ) {
     return res.status(400).send({ error: "BAD DATA GIVEN" });
   }
   try {
     const con = await mysql.createConnection(mysqlConfig);
-    const result = await con.execute(
+    const [result] = await con.execute(
       `INSERT INTO vehicles (model_id, number_plate, country_location) VALUES (${mysql.escape(
         req.body.model_id
       )}, ${mysql.escape(req.body.number_plate)}, ${mysql.escape(
@@ -101,7 +116,7 @@ app.post("/vehicles", async (req, res) => {
     return res.status(500).send({ error: "ERROR, TRY LATER" });
   }
 });
-// OK WORKS, BUT NEED SOME IMPROVEMENT
+// OK WORKS
 
 app.get("/vehicles/lt", async (req, res) => {});
 app.get("/vehicles/lv", async (req, res) => {});

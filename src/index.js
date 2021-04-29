@@ -111,7 +111,12 @@ app.post("/vehicles", async (req, res) => {
         req.body.country_location
       )})`
     );
-    res.send(result);
+    if (!result.insertId) {
+      return res.status(500).send({
+        error: "MORTAL KOMBAT ERROR contact 112 for MORE INFO",
+      });
+    }
+    return res.send({ id: result.insertId });
   } catch (err) {
     console.log(err);
     return res.status(500).send({ error: "ERROR, TRY LATER" });
@@ -124,8 +129,6 @@ app.get("/vehicles/lt", async (req, res) => {
     const con = await mysql.createConnection(mysqlConfig);
     const [data] = await con.execute(
       `SELECT vehicles.id, models.name, vehicles.number_plate, models.hour_price+models.hour_price*0.21 AS price_withVAT, vehicles.country_location FROM vehicles INNER JOIN models ON vehicles.model_id = models.id AND vehicles.country_location = 'LT'`
-
-      //   `SELECT * FROM vehicles WHERE country_location='LT'`
     );
 
     return res.send(data);
@@ -139,8 +142,6 @@ app.get("/vehicles/lv", async (req, res) => {
     const con = await mysql.createConnection(mysqlConfig);
     const [data] = await con.execute(
       `SELECT vehicles.id, models.name, vehicles.number_plate, models.hour_price+models.hour_price*0.21 AS price_withVAT, vehicles.country_location FROM vehicles INNER JOIN models ON vehicles.model_id = models.id AND vehicles.country_location = 'LV'`
-
-      //   `SELECT * FROM vehicles WHERE country_location='LT'`
     );
 
     return res.send(data);
@@ -154,8 +155,6 @@ app.get("/vehicles/ee", async (req, res) => {
     const con = await mysql.createConnection(mysqlConfig);
     const [data] = await con.execute(
       `SELECT vehicles.id, models.name, vehicles.number_plate, models.hour_price+models.hour_price*0.21 AS price_withVAT, vehicles.country_location FROM vehicles INNER JOIN models ON vehicles.model_id = models.id AND vehicles.country_location = 'EE'`
-
-      //   `SELECT * FROM vehicles WHERE country_location='LT'`
     );
 
     return res.send(data);

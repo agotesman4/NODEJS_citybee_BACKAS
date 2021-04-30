@@ -25,6 +25,8 @@ app.get("/models", async (req, res) => {
     const con = await mysql.createConnection(mysqlConfig);
     const [data] = await con.execute(`SELECT * FROM models`);
 
+    con.end();
+
     return res.send(data);
   } catch (err) {
     console.log(err);
@@ -48,6 +50,7 @@ app.post("/models", async (req, res) => {
       (${mysql.escape(req.body.name)}, 
       ${mysql.escape(req.body.hour_price)})`
     );
+    con.end();
 
     if (!result.insertId) {
       return res.status(500).send({
@@ -69,6 +72,8 @@ app.get("/modelscount", async (req, res) => {
       `SELECT name, COUNT(vehicles.model_id) AS COUNT, hour_price FROM models INNER JOIN vehicles ON vehicles.model_id = models.id GROUP by models.id`
     );
 
+    con.end();
+
     return res.send(data);
   } catch (err) {
     console.log(err);
@@ -83,6 +88,8 @@ app.get("/vehicles", async (req, res) => {
     const [data] = await con.execute(
       `SELECT vehicles.id, models.name, vehicles.number_plate, models.hour_price+models.hour_price*0.21 AS price_withVAT FROM vehicles INNER JOIN models ON vehicles.model_id = models.id`
     );
+
+    con.end();
 
     return res.send(data);
   } catch (err) {
@@ -111,6 +118,9 @@ app.post("/vehicles", async (req, res) => {
         req.body.country_location
       )})`
     );
+
+    con.end();
+
     if (!result.insertId) {
       return res.status(500).send({
         error: "MORTAL KOMBAT ERROR contact 112 for MORE INFO",
@@ -130,6 +140,7 @@ app.get("/vehicles/lt", async (req, res) => {
     const [data] = await con.execute(
       `SELECT vehicles.id, models.name, vehicles.number_plate, models.hour_price+models.hour_price*0.21 AS price_withVAT, vehicles.country_location FROM vehicles INNER JOIN models ON vehicles.model_id = models.id AND vehicles.country_location = 'LT'`
     );
+    con.end();
 
     return res.send(data);
   } catch (err) {
@@ -143,6 +154,7 @@ app.get("/vehicles/lv", async (req, res) => {
     const [data] = await con.execute(
       `SELECT vehicles.id, models.name, vehicles.number_plate, models.hour_price+models.hour_price*0.21 AS price_withVAT, vehicles.country_location FROM vehicles INNER JOIN models ON vehicles.model_id = models.id AND vehicles.country_location = 'LV'`
     );
+    con.end();
 
     return res.send(data);
   } catch (err) {
@@ -156,6 +168,7 @@ app.get("/vehicles/ee", async (req, res) => {
     const [data] = await con.execute(
       `SELECT vehicles.id, models.name, vehicles.number_plate, models.hour_price+models.hour_price*0.21 AS price_withVAT, vehicles.country_location FROM vehicles INNER JOIN models ON vehicles.model_id = models.id AND vehicles.country_location = 'EE'`
     );
+    con.end();
 
     return res.send(data);
   } catch (err) {

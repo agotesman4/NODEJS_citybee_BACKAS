@@ -86,7 +86,7 @@ app.get("/vehicles", async (req, res) => {
   try {
     const con = await mysql.createConnection(mysqlConfig);
     const [data] = await con.execute(
-      `SELECT vehicles.id, models.name, vehicles.number_plate, models.hour_price + models.hour_price * 0.21 AS price_pvm, vehicles.country_location FROM vehicles INNER JOIN models ON vehicles.model_id = models.id`
+      `SELECT vehicles.id, models.name, vehicles.number_plate, models.hour_price + models.hour_price * 0.21 AS price_pvm FROM vehicles INNER JOIN models ON vehicles.model_id = models.id`
     );
 
     con.end();

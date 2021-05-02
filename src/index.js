@@ -112,7 +112,7 @@ app.post("/vehicles", async (req, res) => {
   try {
     const con = await mysql.createConnection(mysqlConfig);
     const [result] = await con.execute(
-      `INSERT INTO vehicles (model_id, number_plate, country_location,) VALUES (${mysql.escape(
+      `INSERT INTO vehicles (model_id, number_plate, country_location) VALUES (${mysql.escape(
         req.body.model_id
       )}, ${mysql.escape(req.body.number_plate)}, ${mysql.escape(
         req.body.country_location

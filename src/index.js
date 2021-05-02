@@ -133,50 +133,69 @@ app.post("/vehicles", async (req, res) => {
   }
 });
 // OK WORKS
-
-app.get("/vehicles/lt", async (req, res) => {
+app.get("/vehicles/:country_location", async (req, res) => {
   try {
     const con = await mysql.createConnection(mysqlConfig);
-    const [data] = await con.execute(
-      `SELECT vehicles.id, models.name, vehicles.number_plate, models.hour_price + models.hour_price * 0.21 AS price_pvm, vehicles.country_location FROM vehicles INNER JOIN models ON vehicles.model_id = models.id AND vehicles.country_location = "LT"`
-    );
-    con.end();
 
-    return res.send(data);
-  } catch (err) {
-    console.log(err);
-    return res.status(500).end({ error: "ERROR, PLEASE TRY AGAIN" });
+    const [data] = await con.execute(`
+      SELECT vehicles.id, vehicles.model_id, vehicles.country_location, vehicles.number_plate,
+      models.hour_price+models.hour_price*0.21 AS price_pvm FROM vehicles INNER JOIN models
+      ON models.id = vehicles.model_id
+      WHERE country_location = '${req.params.country_location}'
+      `);
+    console.log(data);
+    res.send(data);
+  } catch (e) {
+    console.log(e);
+    return res
+      .status(500)
+      .send({ error: "There has been an unexpected error" });
   }
 });
-app.get("/vehicles/lv", async (req, res) => {
-  try {
-    const con = await mysql.createConnection(mysqlConfig);
-    const [data] = await con.execute(
-      `SELECT vehicles.id, models.name, vehicles.number_plate, models.hour_price + models.hour_price * 0.21 AS price_pvm, vehicles.country_location FROM vehicles INNER JOIN models ON vehicles.model_id = models.id AND vehicles.country_location = "LV"`
-    );
-    con.end();
 
-    return res.send(data);
-  } catch (err) {
-    console.log(err);
-    return res.status(500).end({ error: "ERROR, PLEASE TRY AGAIN" });
-  }
-});
-app.get("/vehicles/ee", async (req, res) => {
-  try {
-    const con = await mysql.createConnection(mysqlConfig);
-    const [data] = await con.execute(
-      `SELECT vehicles.id, models.name, vehicles.number_plate, models.hour_price + models.hour_price * 0.21 AS price_pvm, vehicles.country_location FROM vehicles INNER JOIN models ON vehicles.model_id = models.id AND vehicles.country_location = "EE"`
-    );
-    con.end();
+// app.get("/vehicles/lt", async (req, res) => {
+//   try {
+//     const con = await mysql.createConnection(mysqlConfig);
+//     const [data] = await con.execute(
+//       `SELECT vehicles.id, models.name, vehicles.number_plate, models.hour_price + models.hour_price * 0.21 AS price_pvm, vehicles.country_location FROM vehicles INNER JOIN models ON vehicles.model_id = models.id AND vehicles.country_location = "LT"`
+//     );
+//     con.end();
 
-    return res.send(data);
-  } catch (err) {
-    console.log(err);
-    return res.status(500).end({ error: "ERROR, PLEASE TRY AGAIN" });
-  }
-});
-// COUNTRY / WORKS FINE
+//     return res.send(data);
+//   } catch (err) {
+//     console.log(err);
+//     return res.status(500).end({ error: "ERROR, PLEASE TRY AGAIN" });
+//   }
+// });
+// app.get("/vehicles/lv", async (req, res) => {
+//   try {
+//     const con = await mysql.createConnection(mysqlConfig);
+//     const [data] = await con.execute(
+//       `SELECT vehicles.id, models.name, vehicles.number_plate, models.hour_price + models.hour_price * 0.21 AS price_pvm, vehicles.country_location FROM vehicles INNER JOIN models ON vehicles.model_id = models.id AND vehicles.country_location = "LV"`
+//     );
+//     con.end();
+
+//     return res.send(data);
+//   } catch (err) {
+//     console.log(err);
+//     return res.status(500).end({ error: "ERROR, PLEASE TRY AGAIN" });
+//   }
+// });
+// app.get("/vehicles/ee", async (req, res) => {
+//   try {
+//     const con = await mysql.createConnection(mysqlConfig);
+//     const [data] = await con.execute(
+//       `SELECT vehicles.id, models.name, vehicles.number_plate, models.hour_price + models.hour_price * 0.21 AS price_pvm, vehicles.country_location FROM vehicles INNER JOIN models ON vehicles.model_id = models.id AND vehicles.country_location = "EE"`
+//     );
+//     con.end();
+
+//     return res.send(data);
+//   } catch (err) {
+//     console.log(err);
+//     return res.status(500).end({ error: "ERROR, PLEASE TRY AGAIN" });
+//   }
+// });
+// // COUNTRY / WORKS FINE
 
 app.all("*", (req, res) => {
   res.status(404).send({ error: "PAGE WAS NOT FOUND" });

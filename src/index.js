@@ -138,9 +138,9 @@ app.get("/vehicles/:country_location", async (req, res) => {
     const con = await mysql.createConnection(mysqlConfig);
 
     const [data] = await con.execute(`
-      SELECT vehicles.id, vehicles.model_id, vehicles.country_location, vehicles.number_plate,
+      SELECT vehicles.id, models.name, vehicles.country_location, vehicles.number_plate,
       models.hour_price+models.hour_price*0.21 AS price_pvm FROM vehicles INNER JOIN models
-      ON models.id = vehicles.model_id
+      ON vehicles.model_id=models.id
       WHERE country_location = '${req.params.country_location}'
       `);
     console.log(data);

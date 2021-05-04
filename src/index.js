@@ -147,9 +147,7 @@ app.get("/vehicles/:country_location", async (req, res) => {
     res.send(data);
   } catch (e) {
     console.log(e);
-    return res
-      .status(500)
-      .send({ error: "There has been an unexpected error" });
+    return res.status(500).send({ error: "ERROR, PLEASE TRY AGAIN" });
   }
 });
 // WORKS AFTER BIG OPTIMIZATION PROCESS...
